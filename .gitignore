@@ -1,0 +1,13 @@
+## Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+project.lock.json
+project.fragment.lock.json
+
+ConsoleTaskManager/obj
+
+structure_proj.md
