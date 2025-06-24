@@ -6,7 +6,7 @@ namespace ConsoleTaskManager.Models
         Employee
     }
 
-    public enum TaskStatus
+    public enum ProjectTaskStatus
     {
         ToDo,
         InProgress,
