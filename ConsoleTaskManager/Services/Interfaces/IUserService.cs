@@ -4,8 +4,9 @@ namespace ConsoleTaskManager.Services.Interfaces
 {
     public interface IUserService
     {
-        IEnumerable<User> GetAllEmployees(); // TODO: добавить асинхронность
-        User? GetUserById(int userId);
-        User? GetUserByLogin(string login);
+        Task<IEnumerable<User>> GetAllEmployeesAsync();
+        Task<User?> GetUserByIdAsync(int userId);
+        Task<User?> GetUserByLoginAsync(string login);
+        Task<User> CreateUserAsync(string login, string password, UserRole role = UserRole.Employee);
     }
 }
