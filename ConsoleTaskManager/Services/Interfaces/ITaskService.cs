@@ -5,12 +5,12 @@ namespace ConsoleTaskManager.Services.Interfaces
 {
     public interface ITaskService
     {
-        ProjectTask CreateTask(CreateTaskDto taskDto, int employeeId); // TODO: добавить асинхронность
+        Task<ProjectTask> CreateTaskAsync(CreateTaskDto taskDto, int employeeId); // TODO: добавить асинхронность
 
-        IEnumerable<ProjectTask> GetTasksForEmployee(int employeeId);
+        Task<IEnumerable<ProjectTask>> GetTasksForEmployeeAsync(int employeeId);
 
-        ProjectTask? ChangeTaskStatus(int taskId, ProjectTaskStatus newStatus);
+        Task<ProjectTask?> ChangeTaskStatusAsync(int taskId, ProjectTaskStatus newStatus);
 
-        ProjectTask? AssignTask(int taskId, int employeeId); 
+        Task<ProjectTask?> AssignTaskAsync(int taskId, int employeeId); 
     }
 }
