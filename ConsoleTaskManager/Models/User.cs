@@ -4,7 +4,7 @@ namespace ConsoleTaskManager.Models
     {
         public int Id { get; set; }
         public required string Login { get; set; }
-        public required string PasswordHash { get; set; }
+        public required byte[] PasswordHash { get; set; }
         public required byte[] PasswordSalt { get; set; }
         public required int PasswordIterations { get; set; }
         public required string PasswordHashAlgorithm { get; set; }
