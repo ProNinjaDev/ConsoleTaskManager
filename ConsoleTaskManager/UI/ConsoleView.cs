@@ -60,5 +60,53 @@ namespace ConsoleTaskManager.UI
             return passwordBuilder.ToString();
 
         }
+
+        public char DisplayManagerMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("== Manager's Menu ==");
+            Console.WriteLine("Select an action:");
+            Console.WriteLine("1. Create a new task");
+            Console.WriteLine("2. Register a new employee");
+            Console.WriteLine("3. View all tasks");
+            Console.WriteLine("4. View all users");
+            Console.WriteLine("0. Log out of the system");
+            Console.Write("Your choice: ");
+
+            while (true)
+            {
+                var keyPress = Console.ReadKey(true);
+                char choice = keyPress.KeyChar;
+
+                if (choice == '1' || choice == '2' || choice == '3' || choice == '4' || choice == '0')
+                {
+                    Console.WriteLine(choice);
+                    return choice;
+                }
+            }
+        }
+
+        public char DisplayEmployeeMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("== Employee's Menu ==");
+            Console.WriteLine("Select an action:");
+            Console.WriteLine("1. View my assigned tasks");
+            Console.WriteLine("2. Change a task's status");
+            Console.WriteLine("0. Log out of the system");
+            Console.Write("Your choice: ");
+
+            while (true)
+            {
+                var keyPress = Console.ReadKey(true);
+                char choice = keyPress.KeyChar;
+
+                if (choice == '1' || choice == '2' || choice == '0')
+                {
+                    Console.WriteLine(choice);
+                    return choice;
+                }
+            }
+        }
     }
 }
