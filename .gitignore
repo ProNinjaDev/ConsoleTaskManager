@@ -9,6 +9,9 @@ project.lock.json
 project.fragment.lock.json
 
 ConsoleTaskManager/obj
+ConsoleTaskManager/bin
+tasks.json
+users.json
 
 structure_proj.md
 .vscode/
