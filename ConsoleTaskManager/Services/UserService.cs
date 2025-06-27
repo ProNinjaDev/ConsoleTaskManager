@@ -54,6 +54,12 @@ namespace ConsoleTaskManager.Services
             return newUser;
         }
 
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            var users = await _dataStorage.LoadUsersAsync();
+            return users;
+        }
+
         public async Task<IEnumerable<User>> GetAllEmployeesAsync()
         {
             var users = await _dataStorage.LoadUsersAsync();
