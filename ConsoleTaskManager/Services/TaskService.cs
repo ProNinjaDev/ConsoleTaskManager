@@ -96,5 +96,11 @@ namespace ConsoleTaskManager.Services
             var tasks = await _dataStorage.LoadTasksAsync();
             return tasks.Where(t => t.AssignedEmployeeId == employeeId);
         }
+
+        public async Task<IEnumerable<ProjectTask>> GetAllTasksAsync()
+        {
+            var tasks = await _dataStorage.LoadTasksAsync();
+            return tasks;
+        }
     }
 }
