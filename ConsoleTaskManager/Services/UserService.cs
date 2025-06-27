@@ -1,3 +1,4 @@
+using ConsoleTaskManager.Exceptions;
 using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Security;
 using ConsoleTaskManager.Services.Interfaces;
@@ -18,9 +19,9 @@ namespace ConsoleTaskManager.Services
         {
             var users = (await _dataStorage.LoadUsersAsync()).ToList();
 
-            if (users.Any(u => u.Login.Equals(login, System.StringComparison.OrdinalIgnoreCase)))
+            if (users.Any(u => u.Login.Equals(login, StringComparison.OrdinalIgnoreCase)))
             {
-                throw new System.Exception("User with this username already exists"); // TODO: Заменить на кастомное исключение
+                throw new DuplicateLoginException(login);
             }
 
             var passwordData = PasswordHasher.GenerateHashedPassword(password);
@@ -48,8 +49,7 @@ namespace ConsoleTaskManager.Services
             };
 
             users.Add(newUser);
-            var tasks = await _dataStorage.LoadTasksAsync();
-            await _dataStorage.SaveChangesAsync(users, tasks);
+            await _dataStorage.SaveUsersAsync(users);
 
             return newUser;
         }

@@ -7,6 +7,7 @@ namespace ConsoleTaskManager.Storage.Interfaces
     {
         Task<IEnumerable<User>> LoadUsersAsync();
         Task<IEnumerable<ProjectTask>> LoadTasksAsync();
-        Task SaveChangesAsync(IEnumerable<User> users, IEnumerable<ProjectTask> tasks);
+        Task SaveUsersAsync(IEnumerable<User> users);
+        Task SaveTasksAsync(IEnumerable<ProjectTask> tasks);
     }
 }
