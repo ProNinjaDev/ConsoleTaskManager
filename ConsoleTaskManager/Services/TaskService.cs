@@ -69,28 +69,6 @@ namespace ConsoleTaskManager.Services
             return taskToUpdate;
         }
 
-        public async Task<ProjectTask> AssignTaskAsync(int taskId, int newEmployeeId) 
-        {
-            var tasks = (await _dataStorage.LoadTasksAsync()).ToList();
-            var taskToUpdate = tasks.FirstOrDefault(t => t.Id == taskId);
-
-            if (taskToUpdate == null)
-            {
-                throw new TaskNotFoundException(taskId);
-            }
-
-            var users = await _dataStorage.LoadUsersAsync();
-            if (!users.Any(u => u.Id == newEmployeeId && u.Role == UserRole.Employee))
-            {
-                throw new UserNotFoundException(newEmployeeId);
-            }
-
-            taskToUpdate.AssignedEmployeeId = newEmployeeId;
-            await _dataStorage.SaveTasksAsync(tasks);
-            
-            return taskToUpdate;
-        }
-
         public async Task<IEnumerable<ProjectTask>> GetTasksForEmployeeAsync(int employeeId)
         {
             var tasks = await _dataStorage.LoadTasksAsync();
