@@ -1,7 +1,7 @@
 using ConsoleTaskManager.Models;
 using ConsoleTaskManager.DTOs;
-
 using System.Text;
+
 
 namespace ConsoleTaskManager.UI 
 {
@@ -19,21 +19,6 @@ namespace ConsoleTaskManager.UI
             }
             Console.WriteLine(message);
             Console.ResetColor();
-        }
-
-        public (string Login, string Password) GetLoginCredentials()
-        {
-            Console.Clear();
-            Console.WriteLine("[INFO] Log in to the system");
-            
-            Console.Write("Enter your login: ");
-            string login = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("Enter your password: ");
-            string password = ReadPassword();
-            Console.WriteLine();
-
-            return (login, password);
         }
 
         private string ReadPassword()
@@ -61,20 +46,44 @@ namespace ConsoleTaskManager.UI
                 }
             }
             return passwordBuilder.ToString();
+        }
 
+        public (string Login, string Password) GetLoginCredentials()
+        {
+            return GetCredentials("Log In", "Login", "Password");
+        }
+
+        public (string Login, string Password) GetNewUserDetails()
+        {
+            return GetCredentials("Register New Employee", "New employee's login", "New employee's password");
+        }
+
+        private (string Login, string Password) GetCredentials(string title, string loginPrompt, string passwordPrompt)
+        {
+            Console.Clear();
+            DisplayHeader(title);
+
+            Console.Write($"{loginPrompt} > ");
+            string login = Console.ReadLine() ?? string.Empty;
+
+            Console.Write($"{passwordPrompt} > ");
+            string password = ReadPassword();
+            Console.WriteLine();
+
+            return (login, password);
         }
 
         public char DisplayManagerMenu()
         {
             Console.Clear();
-            Console.WriteLine("== Manager's Menu ==");
-            Console.WriteLine("Select an action:");
-            Console.WriteLine("1. Create a new task");
-            Console.WriteLine("2. Register a new employee");
-            Console.WriteLine("3. View all tasks");
-            Console.WriteLine("4. View all users");
-            Console.WriteLine("0. Log out of the system");
-            Console.Write("Your choice: ");
+            DisplayHeader("Manager's Menu");
+            Console.WriteLine(" 1. Create a new task");
+            Console.WriteLine(" 2. Register a new employee");
+            Console.WriteLine(" 3. View all tasks");
+            Console.WriteLine(" 4. View all users");
+            Console.WriteLine(" 0. Log out");
+            Console.WriteLine();
+            Console.Write("Action > ");
 
             while (true)
             {
@@ -92,12 +101,12 @@ namespace ConsoleTaskManager.UI
         public char DisplayEmployeeMenu()
         {
             Console.Clear();
-            Console.WriteLine("== Employee's Menu ==");
-            Console.WriteLine("Select an action:");
-            Console.WriteLine("1. View my assigned tasks");
-            Console.WriteLine("2. Change a task's status");
-            Console.WriteLine("0. Log out of the system");
-            Console.Write("Your choice: ");
+            DisplayHeader("Employee's Menu");
+            Console.WriteLine(" 1. View my assigned tasks");
+            Console.WriteLine(" 2. Change a task's status");
+            Console.WriteLine(" 0. Log out");
+            Console.WriteLine();
+            Console.Write("Action > ");
 
             while (true)
             {
@@ -115,7 +124,7 @@ namespace ConsoleTaskManager.UI
         public void DisplayUsers(IEnumerable<User> users)
         {
             Console.Clear();
-            Console.WriteLine("== All Registered Users ==");
+            DisplayHeader("All Registered Users");
 
             if (!users.Any())
             {
@@ -123,34 +132,19 @@ namespace ConsoleTaskManager.UI
                 return;
             }
 
-            Console.WriteLine($"{"ID",-5} {"Login",-20} {"Role",-10}");
-            Console.WriteLine(new string('-', 37)); // рисует сепаратор
-
+            Console.WriteLine($"{"ID",-5} {"LOGIN",-20} {"ROLE",-10}");
+            Console.WriteLine(new string('-', 37));
             foreach (var user in users)
             {
                 Console.WriteLine($"{user.Id,-5} {user.Login,-20} {user.Role,-10}");
             }
-        }
-
-        public (string Login, string Password) GetNewUserDetails() // FIXME: можно объединить с GetLoginCredentials()
-        {
-            Console.Clear();
-            Console.WriteLine("== Register New Employee ==");
-
-            Console.Write("Enter login for the new employee: ");
-            string login = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("Enter password for the new employee: ");
-            string password = ReadPassword();
-            Console.WriteLine();
-
-            return (login, password);
+            Console.WriteLine(new string('-', 37));
         }
 
         public void DisplayTasks(IEnumerable<ProjectTask> tasks, string title)
         {
             Console.Clear();
-            Console.WriteLine($"== {title} =="); // FIXME: исправить формат вывода
+            DisplayHeader(title);
 
             if (!tasks.Any())
             {
@@ -158,26 +152,25 @@ namespace ConsoleTaskManager.UI
                 return;
             }
 
-            Console.WriteLine($"{"ID",-5} {"Name",-25} {"Status",-12} {"AssignedTo",-12}");
-            Console.WriteLine(new string('-', 56));
-
+            Console.WriteLine($"{"ID",-5} {"NAME",-25} {"STATUS",-12} {"ASSIGNED TO",-12}");
+            Console.WriteLine(new string('-', 60));
             foreach (var task in tasks)
             {
-                Console.WriteLine($"{task.Id,-5} {task.Name,-25} {task.Status,-12} {"Emp. " + task.AssignedEmployeeId,-12}");
+                Console.WriteLine($"{task.Id,-5} {task.Name,-25} {task.Status,-12} {"Employee " + task.AssignedEmployeeId,-12}");
             }
+            Console.WriteLine(new string('-', 60));
         }
 
         public CreateTaskDto GetNewTaskDetails()
         {
-            Console.WriteLine("\n== Enter Task Details ==");
-            
-            Console.Write("Enter task name: ");
+            Console.Clear();
+            DisplayHeader("Enter Task Details");
+
+            Console.Write("Name > ");
             string name = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("Enter task description: ");
+            Console.Write("Description > ");
             string description = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("Enter project ID: ");
+            Console.Write("Project ID > ");
             string projectId = Console.ReadLine() ?? string.Empty;
 
             return new CreateTaskDto
@@ -191,19 +184,17 @@ namespace ConsoleTaskManager.UI
         public int? SelectEmployee(IEnumerable<User> employees)
         {
             Console.Clear();
-            Console.WriteLine("== Assign Task to Employee ==");
-            Console.WriteLine("\nAvailable employees:");
+            DisplayHeader("Assign Task to Employee");
             
-            Console.WriteLine($"{"ID",-5} {"Login",-20}");
+            Console.WriteLine($"{"ID",-5} {"LOGIN",-20}");
             Console.WriteLine(new string('-', 27));
-
             foreach (var employee in employees)
             {
                 Console.WriteLine($"{employee.Id,-5} {employee.Login,-20}");
             }
             Console.WriteLine(new string('-', 27));
-
-            Console.Write("\nEnter the ID of the employee to assign this task to (or 0 to cancel): ");
+            Console.WriteLine();
+            Console.Write("Enter Employee ID (or 0 to cancel) > ");
 
             while(true)
             {
@@ -222,19 +213,19 @@ namespace ConsoleTaskManager.UI
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.Write("Invalid ID. Please select a valid employee ID: ");
                     Console.ResetColor();
-                    
                 }
             }
         }
 
         public ProjectTaskStatus? SelectTaskStatus()
         {
-            Console.WriteLine("\n-- Select New Status --");
-            Console.WriteLine("1. ToDo");
-            Console.WriteLine("2. InProgress");
-            Console.WriteLine("3. Done");
-            Console.WriteLine("0. (Cancel)");
-            Console.Write("Your choice: ");
+            DisplaySubHeader("Select New Status");
+            Console.WriteLine(" 1. ToDo");
+            Console.WriteLine(" 2. InProgress");
+            Console.WriteLine(" 3. Done");
+            Console.WriteLine(" 0. (Cancel)");
+            Console.WriteLine();
+            Console.Write("Action > ");
 
             while (true)
             {
@@ -259,6 +250,21 @@ namespace ConsoleTaskManager.UI
             }
         }
 
+        private void DisplayHeader(string title)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            var formattedTitle = $"== {title.ToUpper()} ==";
+            Console.WriteLine(formattedTitle);
+            Console.WriteLine(new string('=', formattedTitle.Length));
+            Console.ResetColor();
+            Console.WriteLine();
+        }
 
+        private void DisplaySubHeader(string title)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine($"\n-- {title} --");
+            Console.ResetColor();
+        }
     }
 }
