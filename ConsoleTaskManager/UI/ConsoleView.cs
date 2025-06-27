@@ -81,6 +81,7 @@ namespace ConsoleTaskManager.UI
             Console.WriteLine(" 2. Register a new employee");
             Console.WriteLine(" 3. View all tasks");
             Console.WriteLine(" 4. View all users");
+            Console.WriteLine(" 5. View task activity log");
             Console.WriteLine(" 0. Log out");
             Console.WriteLine();
             Console.Write("Action > ");
@@ -90,7 +91,7 @@ namespace ConsoleTaskManager.UI
                 var keyPress = Console.ReadKey(true);
                 char choice = keyPress.KeyChar;
 
-                if (choice == '1' || choice == '2' || choice == '3' || choice == '4' || choice == '0')
+                if (choice == '1' || choice == '2' || choice == '3' || choice == '4' || choice == '5' || choice == '0')
                 {
                     Console.WriteLine(choice);
                     return choice;
@@ -247,6 +248,23 @@ namespace ConsoleTaskManager.UI
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("Invalid choice. Please select a valid option: ");
                 Console.ResetColor();
+            }
+        }
+
+        public void DisplayLogs(IEnumerable<string> logs)
+        {
+            Console.Clear();
+            DisplayHeader("Task Activity Log");
+
+            if (!logs.Any())
+            {
+                Console.WriteLine("No activity has been logged yet");
+                return;
+            }
+
+            foreach (var logEntry in logs)
+            {
+                Console.WriteLine(logEntry);
             }
         }
 

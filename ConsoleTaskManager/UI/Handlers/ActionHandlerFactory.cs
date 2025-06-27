@@ -24,7 +24,7 @@ namespace ConsoleTaskManager.UI.Handlers
             switch (role)
             {
                 case UserRole.Manager:
-                    return new ManagerActionHandler(_userService, _taskService, _consoleView);
+                    return new ManagerActionHandler(_userService, _taskService, _consoleView, _loggerService);
                 case UserRole.Employee:
                     return new EmployeeActionHandler(_taskService, _consoleView, _loggerService);
                 default:

@@ -10,12 +10,14 @@ namespace ConsoleTaskManager.UI.Handlers
         private readonly IUserService _userService;
         private readonly ITaskService _taskService;
         private readonly ConsoleView _consoleView;
+        private readonly ILoggerService _loggerService;
 
-        public ManagerActionHandler(IUserService userService, ITaskService taskService, ConsoleView consoleView)
+        public ManagerActionHandler(IUserService userService, ITaskService taskService, ConsoleView consoleView, ILoggerService loggerService)
         {
             _userService = userService;
             _taskService = taskService;
             _consoleView = consoleView;
+            _loggerService = loggerService;
         }
 
         public async Task HandleActionAsync(char choice, User currentUser)
@@ -89,6 +91,10 @@ namespace ConsoleTaskManager.UI.Handlers
                 case '4':
                     var users = await _userService.GetAllUsersAsync();
                     _consoleView.DisplayUsers(users);
+                    break;
+                case '5':
+                    var logs = await _loggerService.GetLogsAsync();
+                    _consoleView.DisplayLogs(logs);
                     break;
             }
             Console.WriteLine("\nPress any key to return to the menu");

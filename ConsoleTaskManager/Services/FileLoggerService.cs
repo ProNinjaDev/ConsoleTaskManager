@@ -1,7 +1,6 @@
 using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Services.Interfaces;
-using System;
-using System.IO;
+
 
 namespace ConsoleTaskManager.Services
 {
@@ -20,6 +19,16 @@ namespace ConsoleTaskManager.Services
             var logEntry = $"[{logTime}] - User '{userName}' changed status for task '{taskName}' (ID: {taskId}) from '{oldStatus}' to '{newStatus}'{Environment.NewLine}";
 
             File.AppendAllText(_logFilePath, logEntry);
+        }
+
+        public async Task<IEnumerable<string>> GetLogsAsync()
+        {
+            if (!File.Exists(_logFilePath))
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            return await File.ReadAllLinesAsync(_logFilePath);
         }
     }
 } 
