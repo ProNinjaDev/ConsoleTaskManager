@@ -1,4 +1,5 @@
 using ConsoleTaskManager.DTOs;
+using ConsoleTaskManager.Exceptions;
 using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Services.Interfaces;
 using ConsoleTaskManager.Storage.Interfaces;
@@ -21,7 +22,7 @@ namespace ConsoleTaskManager.Services
             var users = await _dataStorage.LoadUsersAsync();
             if (!users.Any(u => u.Id == employeeId && u.Role == UserRole.Employee))
             {
-                throw new System.Exception("Incorrect employee ID"); // TODO: заменить на кастомное исключение
+                throw new UserNotFoundException(employeeId);
             }
 
             int newId;
@@ -51,14 +52,14 @@ namespace ConsoleTaskManager.Services
             return newTask;
         }
 
-        public async Task<ProjectTask?> ChangeTaskStatusAsync(int taskId, ProjectTaskStatus newStatus) 
+        public async Task<ProjectTask> ChangeTaskStatusAsync(int taskId, ProjectTaskStatus newStatus) 
         {
             var tasks = (await _dataStorage.LoadTasksAsync()).ToList();
             var taskToUpdate = tasks.FirstOrDefault(t => t.Id == taskId);
 
             if (taskToUpdate == null)
             {
-                return null;
+                throw new TaskNotFoundException(taskId);
             }
 
             taskToUpdate.Status = newStatus;
@@ -69,20 +70,20 @@ namespace ConsoleTaskManager.Services
             return taskToUpdate;
         }
 
-        public async Task<ProjectTask?> AssignTaskAsync(int taskId, int newEmployeeId) 
+        public async Task<ProjectTask> AssignTaskAsync(int taskId, int newEmployeeId) 
         {
             var tasks = (await _dataStorage.LoadTasksAsync()).ToList();
             var taskToUpdate = tasks.FirstOrDefault(t => t.Id == taskId);
 
             if (taskToUpdate == null)
             {
-                return null;
+                throw new TaskNotFoundException(taskId);
             }
 
             var users = await _dataStorage.LoadUsersAsync();
             if (!users.Any(u => u.Id == newEmployeeId && u.Role == UserRole.Employee))
             {
-                throw new System.Exception("Incorrect employee ID"); // TODO: Заменить на кастомное исключение
+                throw new UserNotFoundException(newEmployeeId);
             }
 
             taskToUpdate.AssignedEmployeeId = newEmployeeId;
