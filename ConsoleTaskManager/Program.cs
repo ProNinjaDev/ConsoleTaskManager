@@ -1,4 +1,5 @@
-﻿using ConsoleTaskManager.Models;
+﻿using ConsoleTaskManager.Exceptions;
+using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Services;
 using ConsoleTaskManager.Services.Interfaces;
 using ConsoleTaskManager.Storage;
@@ -104,6 +105,10 @@ async Task HandleManagerAction(char choice)
                 consoleView.DisplayMessage($"[OK] Task '{newTask.Name}' created and assigned to employee ID {newTask.AssignedEmployeeId}");
 
             }
+            catch (UserNotFoundException ex)
+            {
+                consoleView.DisplayMessage($"[ERROR] {ex.Message}", true);
+            }
             catch (Exception ex)
             {
                 consoleView.DisplayMessage($"[ERROR] An unexpected error occurred: {ex.Message}", true);
@@ -122,6 +127,10 @@ async Task HandleManagerAction(char choice)
 
                 var newUser = await userService.CreateUserAsync(newUserDetails.Login, newUserDetails.Password);
                 consoleView.DisplayMessage($"[OK] Employee '{newUser.Login}' has been registered");
+            }
+            catch (DuplicateLoginException ex)
+            {
+                consoleView.DisplayMessage($"[ERROR] {ex.Message}", true);
             }
             catch (Exception ex)
             {
@@ -169,12 +178,6 @@ async Task HandleEmployeeAction(char choice, int employeeId)
                     break;
                 }
 
-                if (!tasks.Any(t => t.Id == taskId))
-                {
-                    consoleView.DisplayMessage("[ERROR] Invalid ID", true);
-                    break;
-                }
-
                 var newStatus = consoleView.SelectTaskStatus();
                 if (newStatus is null)
                 {
@@ -182,8 +185,12 @@ async Task HandleEmployeeAction(char choice, int employeeId)
                     break;
                 }
 
-                await taskService.ChangeTaskStatusAsync(taskId, newStatus.Value);
-                consoleView.DisplayMessage($"[OK] Status for task ID {taskId} has been updated to {newStatus.Value}");
+                var updatedTask = await taskService.ChangeTaskStatusAsync(taskId, newStatus.Value);
+                consoleView.DisplayMessage($"[OK] Status for task ID {updatedTask.Id} has been updated to {updatedTask.Status}");
+            }
+            catch (TaskNotFoundException ex)
+            {
+                consoleView.DisplayMessage($"[ERROR] {ex.Message}", true);
             }
             catch (Exception ex)
             {
