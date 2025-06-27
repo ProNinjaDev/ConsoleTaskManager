@@ -1,9 +1,11 @@
 using ConsoleTaskManager.Exceptions;
+using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Services.Interfaces;
+using ConsoleTaskManager.UI.Handlers.Interfaces;
 
 namespace ConsoleTaskManager.UI.Handlers
 {
-    public class ManagerActionHandler
+    public class ManagerActionHandler : IActionHandler
     {
         private readonly IUserService _userService;
         private readonly ITaskService _taskService;
@@ -16,7 +18,7 @@ namespace ConsoleTaskManager.UI.Handlers
             _consoleView = consoleView;
         }
 
-        public async Task HandleActionAsync(char choice)
+        public async Task HandleActionAsync(char choice, User currentUser)
         {
             switch (choice)
             {

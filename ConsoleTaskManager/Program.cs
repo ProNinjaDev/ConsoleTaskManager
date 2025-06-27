@@ -13,8 +13,7 @@ IAuthService authService = new AuthService(dataStorage);
 IUserService userService = new UserService(dataStorage);
 ITaskService taskService = new TaskService(dataStorage);
 ConsoleView consoleView = new ConsoleView();
-var managerActionHandler = new ManagerActionHandler(userService, taskService, consoleView);
-var employeeActionHandler = new EmployeeActionHandler(taskService, consoleView);
+var actionHandlerFactory = new ActionHandlerFactory(userService, taskService, consoleView);
 
 
 await InitializeApplication();
@@ -65,14 +64,8 @@ async Task UserProcessingLoop(User currentUser)
             break;
         }
 
-        if (currentUser.Role == UserRole.Manager)
-        {
-            await managerActionHandler.HandleActionAsync(choice);
-        }
-        else
-        {
-            await employeeActionHandler.HandleActionAsync(choice, currentUser.Id);
-        }
+        var handler = actionHandlerFactory.CreateHandler(currentUser.Role);
+        await handler.HandleActionAsync(choice, currentUser);
     }
 }
 

@@ -1,12 +1,14 @@
 using ConsoleTaskManager.Exceptions;
+using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Services.Interfaces;
+using ConsoleTaskManager.UI.Handlers.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ConsoleTaskManager.UI.Handlers
 {
-    public class EmployeeActionHandler
+    public class EmployeeActionHandler : IActionHandler
     {
         private readonly ITaskService _taskService;
         private readonly ConsoleView _consoleView;
@@ -17,8 +19,9 @@ namespace ConsoleTaskManager.UI.Handlers
             _consoleView = consoleView;
         }
 
-        public async Task HandleActionAsync(char choice, int employeeId)
+        public async Task HandleActionAsync(char choice, User currentUser)
         {
+            var employeeId = currentUser.Id;
             switch (choice)
             {
                 case '1':
