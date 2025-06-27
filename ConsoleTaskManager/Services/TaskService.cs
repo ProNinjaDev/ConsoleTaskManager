@@ -47,7 +47,7 @@ namespace ConsoleTaskManager.Services
             };
 
             tasks.Add(newTask);
-            await _dataStorage.SaveChangesAsync(users, tasks);
+            await _dataStorage.SaveTasksAsync(tasks);
 
             return newTask;
         }
@@ -64,8 +64,7 @@ namespace ConsoleTaskManager.Services
 
             taskToUpdate.Status = newStatus;
 
-            var users = await _dataStorage.LoadUsersAsync();
-            await _dataStorage.SaveChangesAsync(users, tasks);
+            await _dataStorage.SaveTasksAsync(tasks);
 
             return taskToUpdate;
         }
@@ -87,7 +86,7 @@ namespace ConsoleTaskManager.Services
             }
 
             taskToUpdate.AssignedEmployeeId = newEmployeeId;
-            await _dataStorage.SaveChangesAsync(users, tasks);
+            await _dataStorage.SaveTasksAsync(tasks);
             
             return taskToUpdate;
         }

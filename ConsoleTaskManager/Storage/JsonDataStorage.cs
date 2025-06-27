@@ -51,18 +51,20 @@ namespace ConsoleTaskManager.Storage
             }
         }
 
-        public async Task SaveChangesAsync(IEnumerable<User> users, IEnumerable<ProjectTask> tasks)
+        public async Task SaveUsersAsync(IEnumerable<User> users)
         {
             using (var usersStream = File.Create(_usersFilePath))
             {
                 await JsonSerializer.SerializeAsync(usersStream, users, _serializerOptions);
             }
+        }
 
+        public async Task SaveTasksAsync(IEnumerable<ProjectTask> tasks)
+        {
             using (var tasksStream = File.Create(_tasksFilePath))
             {
                 await JsonSerializer.SerializeAsync(tasksStream, tasks, _serializerOptions);
             }
         }
-
     }
 }

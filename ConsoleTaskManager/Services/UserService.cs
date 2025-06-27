@@ -49,8 +49,7 @@ namespace ConsoleTaskManager.Services
             };
 
             users.Add(newUser);
-            var tasks = await _dataStorage.LoadTasksAsync();
-            await _dataStorage.SaveChangesAsync(users, tasks);
+            await _dataStorage.SaveUsersAsync(users);
 
             return newUser;
         }
