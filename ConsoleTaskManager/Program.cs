@@ -3,47 +3,72 @@ using ConsoleTaskManager.Services;
 using ConsoleTaskManager.Services.Interfaces;
 using ConsoleTaskManager.Storage;
 using ConsoleTaskManager.Storage.Interfaces;
+using ConsoleTaskManager.UI;
 
 IDataStorage dataStorage = new JsonDataStorage("users.json", "tasks.json");
 
 IAuthService authService = new AuthService(dataStorage);
 IUserService userService = new UserService(dataStorage);
 ITaskService taskService = new TaskService(dataStorage);
+ConsoleView consoleView = new ConsoleView();
 
 
 await InitializeApplication();
+await RunApplication();
 
-// TODO: добавить меню
-
-Console.WriteLine("TEST START");
-
-var admin = await authService.SignIn("Admin", "Adminpassword555");
-
-if(admin != null) 
+async Task RunApplication()
 {
-    Console.WriteLine($"[OK] Sign-in successful! User: {admin.Login}, Role: {admin.Role}");
-
-    var newEmployee = await userService.CreateUserAsync("MyLoveEmployee", "passpass111", UserRole.Employee);
-    Console.WriteLine($"[OK] Created employee: {newEmployee.Login}, ID: {newEmployee.Id}");
-
-    var taskDto = new ConsoleTaskManager.DTOs.CreateTaskDto 
+    while (true)
     {
-        Name = "UI layer",
-        Description = "Create a UI layer for this application",
-        ProjectId = "Summer"
-    };
+        var credentials = consoleView.GetLoginCredentials();
+        var currentUser = await authService.SignIn(credentials.Login, credentials.Password);
 
-    var newTask = await taskService.CreateTaskAsync(taskDto, newEmployee.Id);
-    Console.WriteLine($"[OK] Created task: '{newTask.Name}' for employee ID {newTask.AssignedEmployeeId}");
+        if (currentUser is null)
+        {
+            consoleView.DisplayMessage("[ERROR] Invalid login or password", true);
+            Console.ReadKey();
+            continue;
+        }
 
-    var employeeTasks = await taskService.GetTasksForEmployeeAsync(newEmployee.Id);
-    Console.WriteLine($"[INFO] Found {employeeTasks.Count()} tasks for employee {newEmployee.Login}");
+        consoleView.DisplayMessage($"Sign-in successful! Welcome {currentUser.Login} ({currentUser.Role})");
+        Console.ReadKey();
+
+        await UserProcessingLoop(currentUser);
+        
+    }
 }
-else 
+
+async Task UserProcessingLoop(User currentUser)
 {
-    Console.WriteLine("[ERROR] Failed to sign in as the admin user");
-}
+    while (true) 
+    {
+        char choice;
 
+        if (currentUser.Role == UserRole.Manager)
+        {
+            choice = consoleView.DisplayManagerMenu();
+        }
+        else 
+        {
+            choice = consoleView.DisplayEmployeeMenu();
+        }
+
+        if (choice == '0')
+        {
+            consoleView.DisplayMessage("You have been logged out");
+            break;
+        }
+
+        if (currentUser.Role == UserRole.Manager)
+        {
+            // TODO: обработать выбор юзера
+        }
+        else
+        {
+            // TODO: обработать выбор юзера
+        }
+    }
+}
 
 
 async Task InitializeApplication() 
@@ -52,12 +77,12 @@ async Task InitializeApplication()
 
     if (!existingUsers.Any()) 
     {
-        Console.WriteLine("User base is empty");
+        consoleView.DisplayMessage("User base is empty");
         await userService.CreateUserAsync("Admin", "Adminpassword555", UserRole.Manager);
-        Console.WriteLine("Managing user is created by default");
+        consoleView.DisplayMessage("Managing user is created by default");
     }
     else 
     {
-        Console.WriteLine("User base has been discovered");
+        consoleView.DisplayMessage("User base has been discovered");
     }
 }
