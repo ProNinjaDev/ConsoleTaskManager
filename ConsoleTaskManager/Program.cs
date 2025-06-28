@@ -30,14 +30,12 @@ async Task RunApplication()
         if (currentUser is null)
         {
             consoleView.DisplayMessage("[ERROR] Invalid login or password", true);
-            Console.WriteLine("\nPress any key to continue");
-            Console.ReadKey();
+            consoleView.WaitForAnyKey();
             continue;
         }
 
         consoleView.DisplayMessage($"Sign-in successful! Welcome {currentUser.Login} ({currentUser.Role})");
-        Console.WriteLine("\nPress any key to continue");
-        Console.ReadKey();
+        consoleView.WaitForAnyKey();
 
         await UserProcessingLoop(currentUser);
         

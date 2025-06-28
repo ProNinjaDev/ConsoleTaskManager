@@ -350,5 +350,11 @@ namespace ConsoleTaskManager.UI
                 DisplayInvalidChoiceMessage();
             }
         }
+
+        public void WaitForAnyKey(string message = "\nPress any key to continue...")
+        {
+            Console.WriteLine(message);
+            Console.ReadKey();
+        }
     }
 }
