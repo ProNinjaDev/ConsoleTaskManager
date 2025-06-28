@@ -1,6 +1,7 @@
 using ConsoleTaskManager.Models;
 using ConsoleTaskManager.DTOs;
 using System.Text;
+using System.Collections;
 
 
 namespace ConsoleTaskManager.UI 
@@ -98,14 +99,24 @@ namespace ConsoleTaskManager.UI
             }
         }
 
-        public void DisplayUsers(IEnumerable<User> users)
+        private bool BeginTableDisplay(string title, IEnumerable items, string emptyMessage)
         {
             Console.Clear();
-            DisplayHeader("All Registered Users");
+            DisplayHeader(title);
 
-            if (!users.Any())
+            if (!items.Cast<object>().Any())
             {
-                Console.WriteLine("No users found in the system");
+                Console.WriteLine(emptyMessage);
+                return false;
+            }
+
+            return true;
+        }
+
+        public void DisplayUsers(IEnumerable<User> users)
+        {
+            if (!BeginTableDisplay("All Registered Users", users, "No users found in the system"))
+            {
                 return;
             }
 
@@ -120,12 +131,8 @@ namespace ConsoleTaskManager.UI
 
         public void DisplayTasks(IEnumerable<ProjectTask> tasks, string title)
         {
-            Console.Clear();
-            DisplayHeader(title);
-
-            if (!tasks.Any())
+            if (!BeginTableDisplay(title, tasks, "No tasks found"))
             {
-                Console.WriteLine("No tasks found");
                 return;
             }
 
