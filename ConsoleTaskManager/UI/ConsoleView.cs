@@ -301,6 +301,71 @@ namespace ConsoleTaskManager.UI
             }
         }
 
+        public (TaskSortField, SortDirection) SelectSortOptions()
+        {
+            DisplaySubHeader("Sort tasks by");
+            Console.WriteLine(" 1. ID");
+            Console.WriteLine(" 2. Name");
+            Console.WriteLine(" 3. Status");
+
+            TaskSortField sortBy;
+            while (true)
+            {
+                Console.Write("\nAction > ");
+                var keyPress = Console.ReadKey(true);
+                Console.WriteLine(keyPress.KeyChar);
+
+                switch (keyPress.KeyChar)
+                {
+                    case '1':
+                        sortBy = TaskSortField.Id;
+                        break;
+                    case '2':
+                        sortBy = TaskSortField.Name;
+                        break;
+                    case '3':
+                        sortBy = TaskSortField.Status;
+                        break;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.Write("Invalid choice. Please select a valid option.");
+                        Console.ResetColor();
+                        continue;
+                }
+                break;
+            }
+
+            DisplaySubHeader("Sort direction");
+            Console.WriteLine(" 1. Ascending");
+            Console.WriteLine(" 2. Descending");
+            
+            SortDirection sortDirection;
+            while (true)
+            {
+                Console.Write("\nAction > ");
+                var keyPress = Console.ReadKey(true);
+                Console.WriteLine(keyPress.KeyChar);
+
+                switch (keyPress.KeyChar)
+                {
+                    case '1':
+                        sortDirection = SortDirection.Ascending;
+                        break;
+                    case '2':
+                        sortDirection = SortDirection.Descending;
+                        break;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.Write("Invalid choice. Please select a valid option.");
+                        Console.ResetColor();
+                        continue;
+                }
+                break;
+            }
+            
+            return (sortBy, sortDirection);
+        }
+
         private void DisplayHeader(string title)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;

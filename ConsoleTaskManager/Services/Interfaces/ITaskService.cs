@@ -7,7 +7,7 @@ namespace ConsoleTaskManager.Services.Interfaces
     {
         Task<ProjectTask> CreateTaskAsync(CreateTaskDto taskDto, int employeeId);
         Task<ProjectTask> ChangeTaskStatusAsync(int taskId, ProjectTaskStatus newStatus);
-        Task<IEnumerable<ProjectTask>> GetAllTasksAsync(ProjectTaskStatus? statusFilter = null);
+        Task<IEnumerable<ProjectTask>> GetAllTasksAsync(ProjectTaskStatus? statusFilter = null, TaskSortField? sortBy = null, SortDirection? sortDirection = null);
         Task<IEnumerable<ProjectTask>> GetTasksForEmployeeAsync(int employeeId);
     }
 }

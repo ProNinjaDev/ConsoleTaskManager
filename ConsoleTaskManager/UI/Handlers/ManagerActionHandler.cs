@@ -89,8 +89,13 @@ namespace ConsoleTaskManager.UI.Handlers
                     break;
                 case '3':
                     var statusFilter = _consoleView.SelectStatusFilter();
-                    var allTasks = await _taskService.GetAllTasksAsync(statusFilter);
-                    _consoleView.DisplayTasks(allTasks, statusFilter.HasValue ? $"Tasks ({statusFilter.Value})" : "All tasks");
+                    var sortOptions = _consoleView.SelectSortOptions();
+                    var allTasks = await _taskService.GetAllTasksAsync(statusFilter, sortOptions.Item1, sortOptions.Item2);
+                    
+                    var title = statusFilter.HasValue ? $"Tasks ({statusFilter.Value})" : "All tasks";
+                    title += $" - sorted by {sortOptions.Item1} {sortOptions.Item2}";
+
+                    _consoleView.DisplayTasks(allTasks, title);
                     break;
                 case '4':
                     var users = await _userService.GetAllUsersAsync();
