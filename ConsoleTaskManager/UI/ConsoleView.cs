@@ -73,39 +73,15 @@ namespace ConsoleTaskManager.UI
             return (login, password);
         }
 
-        public char DisplayManagerMenu()
+        public char DisplayMenu(string title, Dictionary<char, string> options)
         {
             Console.Clear();
-            DisplayHeader("Manager's Menu");
-            Console.WriteLine(" 1. Create a new task");
-            Console.WriteLine(" 2. Register a new employee");
-            Console.WriteLine(" 3. View all tasks");
-            Console.WriteLine(" 4. View all users");
-            Console.WriteLine(" 5. View task activity log");
-            Console.WriteLine(" 0. Log out");
-            Console.WriteLine();
-            Console.Write("Action > ");
+            DisplayHeader(title);
 
-            while (true)
+            foreach (var option in options)
             {
-                var keyPress = Console.ReadKey(true);
-                char choice = keyPress.KeyChar;
-
-                if (choice == '1' || choice == '2' || choice == '3' || choice == '4' || choice == '5' || choice == '0')
-                {
-                    Console.WriteLine(choice);
-                    return choice;
-                }
+                Console.WriteLine($" {option.Key}. {option.Value}");
             }
-        }
-
-        public char DisplayEmployeeMenu()
-        {
-            Console.Clear();
-            DisplayHeader("Employee's Menu");
-            Console.WriteLine(" 1. View my assigned tasks");
-            Console.WriteLine(" 2. Change a task's status");
-            Console.WriteLine(" 0. Log out");
             Console.WriteLine();
             Console.Write("Action > ");
 
@@ -114,7 +90,7 @@ namespace ConsoleTaskManager.UI
                 var keyPress = Console.ReadKey(true);
                 char choice = keyPress.KeyChar;
 
-                if (choice == '1' || choice == '2' || choice == '0')
+                if (options.ContainsKey(choice))
                 {
                     Console.WriteLine(choice);
                     return choice;
