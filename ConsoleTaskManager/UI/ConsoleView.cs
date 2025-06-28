@@ -268,6 +268,39 @@ namespace ConsoleTaskManager.UI
             }
         }
 
+        public ProjectTaskStatus? SelectStatusFilter()
+        {
+            DisplaySubHeader("Filter tasks by status");
+            Console.WriteLine(" 1. ToDo");
+            Console.WriteLine(" 2. InProgress");
+            Console.WriteLine(" 3. Done");
+            Console.WriteLine(" 4. (Show All)");
+            Console.WriteLine();
+            Console.Write("Action > ");
+
+            while (true)
+            {
+                var keyPress = Console.ReadKey(true);
+                Console.WriteLine(keyPress.KeyChar);
+
+                switch (keyPress.KeyChar)
+                {
+                    case '1':
+                        return ProjectTaskStatus.ToDo;
+                    case '2':
+                        return ProjectTaskStatus.InProgress;
+                    case '3':
+                        return ProjectTaskStatus.Done;
+                    case '4':
+                        return null;
+                }
+                
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Invalid choice. Please select a valid option: ");
+                Console.ResetColor();
+            }
+        }
+
         private void DisplayHeader(string title)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;

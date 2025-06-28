@@ -75,9 +75,13 @@ namespace ConsoleTaskManager.Services
             return tasks.Where(t => t.AssignedEmployeeId == employeeId);
         }
 
-        public async Task<IEnumerable<ProjectTask>> GetAllTasksAsync()
+        public async Task<IEnumerable<ProjectTask>> GetAllTasksAsync(ProjectTaskStatus? statusFilter = null)
         {
             var tasks = await _dataStorage.LoadTasksAsync();
+            if (statusFilter is not null)
+            {
+                return tasks.Where(t => t.Status == statusFilter.Value);
+            }
             return tasks;
         }
     }

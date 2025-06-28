@@ -2,6 +2,9 @@ using ConsoleTaskManager.Exceptions;
 using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Services.Interfaces;
 using ConsoleTaskManager.UI.Handlers.Interfaces;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ConsoleTaskManager.UI.Handlers
 {
@@ -85,8 +88,9 @@ namespace ConsoleTaskManager.UI.Handlers
                     }
                     break;
                 case '3':
-                    var allTasks = await _taskService.GetAllTasksAsync();
-                    _consoleView.DisplayTasks(allTasks, "All tasks");
+                    var statusFilter = _consoleView.SelectStatusFilter();
+                    var allTasks = await _taskService.GetAllTasksAsync(statusFilter);
+                    _consoleView.DisplayTasks(allTasks, statusFilter.HasValue ? $"Tasks ({statusFilter.Value})" : "All tasks");
                     break;
                 case '4':
                     var users = await _userService.GetAllUsersAsync();
