@@ -78,35 +78,20 @@ namespace ConsoleTaskManager.Services
 
             if (sortBy is not null)
             {
+                Func<ProjectTask, object> keySelector = sortBy switch
+                {
+                    TaskSortField.Name => t => t.Name,
+                    TaskSortField.Status => t => t.Status,
+                    _ => t => t.Id
+                };
+
                 if (sortDirection == SortDirection.Descending)
                 {
-                    switch (sortBy)
-                    {
-                        case TaskSortField.Name:
-                            tasks = tasks.OrderByDescending(t => t.Name);
-                            break;
-                        case TaskSortField.Status:
-                            tasks = tasks.OrderByDescending(t => t.Status);
-                            break;
-                        default:
-                            tasks = tasks.OrderByDescending(t => t.Id);
-                            break;
-                    }
+                    tasks = tasks.OrderByDescending(keySelector);
                 }
                 else
                 {
-                    switch (sortBy)
-                    {
-                        case TaskSortField.Name:
-                            tasks = tasks.OrderBy(t => t.Name);
-                            break;
-                        case TaskSortField.Status:
-                            tasks = tasks.OrderBy(t => t.Status);
-                            break;
-                        default:
-                            tasks = tasks.OrderBy(t => t.Id);
-                            break;
-                    }
+                    tasks = tasks.OrderBy(keySelector);
                 }
             }
 
