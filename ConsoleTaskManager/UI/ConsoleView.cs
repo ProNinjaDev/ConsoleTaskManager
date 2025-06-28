@@ -194,44 +194,22 @@ namespace ConsoleTaskManager.UI
                     {
                         return employeeId;
                     }
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write("Invalid ID. Please select a valid employee ID: ");
-                    Console.ResetColor();
+                    DisplayInvalidChoiceMessage("Invalid ID. Please select a valid employee ID: ");
                 }
             }
         }
 
         public ProjectTaskStatus? SelectTaskStatus()
         {
-            DisplaySubHeader("Select New Status");
-            Console.WriteLine(" 1. ToDo");
-            Console.WriteLine(" 2. InProgress");
-            Console.WriteLine(" 3. Done");
-            Console.WriteLine(" 0. (Cancel)");
-            Console.WriteLine();
-            Console.Write("Action > ");
-
-            while (true)
+            var options = new Dictionary<char, (string Text, ProjectTaskStatus? Value)>
             {
-                var keyPress = Console.ReadKey(true);
-                Console.WriteLine(keyPress.KeyChar);
+                { '1', ("ToDo", ProjectTaskStatus.ToDo) },
+                { '2', ("InProgress", ProjectTaskStatus.InProgress) },
+                { '3', ("Done", ProjectTaskStatus.Done) },
+                { '0', ("(Cancel)", null) }
+            };
 
-                switch (keyPress.KeyChar)
-                {
-                    case '1':
-                        return ProjectTaskStatus.ToDo;
-                    case '2':
-                        return ProjectTaskStatus.InProgress;
-                    case '3':
-                        return ProjectTaskStatus.Done;
-                    case '0':
-                        return null;
-                }
-                
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("Invalid choice. Please select a valid option: ");
-                Console.ResetColor();
-            }
+            return SelectOption<ProjectTaskStatus>("Select New Status", options);
         }
 
         public void DisplayLogs(IEnumerable<string> logs)
@@ -253,35 +231,15 @@ namespace ConsoleTaskManager.UI
 
         public ProjectTaskStatus? SelectStatusFilter()
         {
-            DisplaySubHeader("Filter tasks by status");
-            Console.WriteLine(" 1. ToDo");
-            Console.WriteLine(" 2. InProgress");
-            Console.WriteLine(" 3. Done");
-            Console.WriteLine(" 4. (Show All)");
-            Console.WriteLine();
-            Console.Write("Action > ");
-
-            while (true)
+            var options = new Dictionary<char, (string Text, ProjectTaskStatus? Value)>
             {
-                var keyPress = Console.ReadKey(true);
-                Console.WriteLine(keyPress.KeyChar);
+                { '1', ("ToDo", ProjectTaskStatus.ToDo) },
+                { '2', ("InProgress", ProjectTaskStatus.InProgress) },
+                { '3', ("Done", ProjectTaskStatus.Done) },
+                { '4', ("(Show All)", null) }
+            };
 
-                switch (keyPress.KeyChar)
-                {
-                    case '1':
-                        return ProjectTaskStatus.ToDo;
-                    case '2':
-                        return ProjectTaskStatus.InProgress;
-                    case '3':
-                        return ProjectTaskStatus.Done;
-                    case '4':
-                        return null;
-                }
-                
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("Invalid choice. Please select a valid option: ");
-                Console.ResetColor();
-            }
+            return SelectOption<ProjectTaskStatus>("Filter tasks by status", options);
         }
 
         public (TaskSortField, SortDirection) SelectSortOptions()
@@ -310,9 +268,7 @@ namespace ConsoleTaskManager.UI
                         sortBy = TaskSortField.Status;
                         break;
                     default:
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write("Invalid choice. Please select a valid option.");
-                        Console.ResetColor();
+                        DisplayInvalidChoiceMessage();
                         continue;
                 }
                 break;
@@ -338,9 +294,7 @@ namespace ConsoleTaskManager.UI
                         sortDirection = SortDirection.Descending;
                         break;
                     default:
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write("Invalid choice. Please select a valid option.");
-                        Console.ResetColor();
+                        DisplayInvalidChoiceMessage();
                         continue;
                 }
                 break;
@@ -364,6 +318,37 @@ namespace ConsoleTaskManager.UI
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine($"\n-- {title} --");
             Console.ResetColor();
+        }
+
+        private void DisplayInvalidChoiceMessage(string message = "Invalid choice. Please select a valid option: ")
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(message);
+            Console.ResetColor();
+        }
+
+        private T? SelectOption<T>(string subHeader, Dictionary<char, (string Text, T? Value)> options) where T : struct
+        {
+            DisplaySubHeader(subHeader);
+            foreach (var option in options)
+            {
+                Console.WriteLine($" {option.Key}. {option.Value.Text}");
+            }
+            Console.WriteLine();
+            Console.Write("Action > ");
+
+            while (true)
+            {
+                var keyPress = Console.ReadKey(true);
+                Console.WriteLine(keyPress.KeyChar);
+
+                if (options.TryGetValue(keyPress.KeyChar, out var selectedOption))
+                {
+                    return selectedOption.Value;
+                }
+                
+                DisplayInvalidChoiceMessage();
+            }
         }
     }
 }
