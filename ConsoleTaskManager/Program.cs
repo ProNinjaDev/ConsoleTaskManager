@@ -13,7 +13,8 @@ IAuthService authService = new AuthService(dataStorage);
 IUserService userService = new UserService(dataStorage);
 ITaskService taskService = new TaskService(dataStorage);
 ConsoleView consoleView = new ConsoleView();
-var actionHandlerFactory = new ActionHandlerFactory(userService, taskService, consoleView);
+ILoggerService loggerService = new FileLoggerService();
+var actionHandlerFactory = new ActionHandlerFactory(userService, taskService, consoleView, loggerService);
 
 
 await InitializeApplication();

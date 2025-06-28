@@ -12,4 +12,17 @@ namespace ConsoleTaskManager.Models
         InProgress,
         Done
     }
+
+    public enum TaskSortField
+    {
+        Id,
+        Name,
+        Status
+    }
+
+    public enum SortDirection
+    {
+        Ascending,
+        Descending
+    }
 }

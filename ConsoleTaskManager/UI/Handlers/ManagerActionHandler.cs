@@ -2,6 +2,9 @@ using ConsoleTaskManager.Exceptions;
 using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Services.Interfaces;
 using ConsoleTaskManager.UI.Handlers.Interfaces;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ConsoleTaskManager.UI.Handlers
 {
@@ -10,12 +13,14 @@ namespace ConsoleTaskManager.UI.Handlers
         private readonly IUserService _userService;
         private readonly ITaskService _taskService;
         private readonly ConsoleView _consoleView;
+        private readonly ILoggerService _loggerService;
 
-        public ManagerActionHandler(IUserService userService, ITaskService taskService, ConsoleView consoleView)
+        public ManagerActionHandler(IUserService userService, ITaskService taskService, ConsoleView consoleView, ILoggerService loggerService)
         {
             _userService = userService;
             _taskService = taskService;
             _consoleView = consoleView;
+            _loggerService = loggerService;
         }
 
         public async Task HandleActionAsync(char choice, User currentUser)
@@ -83,12 +88,22 @@ namespace ConsoleTaskManager.UI.Handlers
                     }
                     break;
                 case '3':
-                    var allTasks = await _taskService.GetAllTasksAsync();
-                    _consoleView.DisplayTasks(allTasks, "All tasks");
+                    var statusFilter = _consoleView.SelectStatusFilter();
+                    var sortOptions = _consoleView.SelectSortOptions();
+                    var allTasks = await _taskService.GetAllTasksAsync(statusFilter, sortOptions.Item1, sortOptions.Item2);
+                    
+                    var title = statusFilter.HasValue ? $"Tasks ({statusFilter.Value})" : "All tasks";
+                    title += $" - sorted by {sortOptions.Item1} {sortOptions.Item2}";
+
+                    _consoleView.DisplayTasks(allTasks, title);
                     break;
                 case '4':
                     var users = await _userService.GetAllUsersAsync();
                     _consoleView.DisplayUsers(users);
+                    break;
+                case '5':
+                    var logs = await _loggerService.GetLogsAsync();
+                    _consoleView.DisplayLogs(logs);
                     break;
             }
             Console.WriteLine("\nPress any key to return to the menu");

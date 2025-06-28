@@ -75,9 +75,49 @@ namespace ConsoleTaskManager.Services
             return tasks.Where(t => t.AssignedEmployeeId == employeeId);
         }
 
-        public async Task<IEnumerable<ProjectTask>> GetAllTasksAsync()
+        public async Task<IEnumerable<ProjectTask>> GetAllTasksAsync(ProjectTaskStatus? statusFilter = null, TaskSortField? sortBy = null, SortDirection? sortDirection = null)
         {
             var tasks = await _dataStorage.LoadTasksAsync();
+            
+            if (statusFilter is not null)
+            {
+                tasks = tasks.Where(t => t.Status == statusFilter.Value);
+            }
+
+            if (sortBy is not null)
+            {
+                if (sortDirection == SortDirection.Descending)
+                {
+                    switch (sortBy)
+                    {
+                        case TaskSortField.Name:
+                            tasks = tasks.OrderByDescending(t => t.Name);
+                            break;
+                        case TaskSortField.Status:
+                            tasks = tasks.OrderByDescending(t => t.Status);
+                            break;
+                        default:
+                            tasks = tasks.OrderByDescending(t => t.Id);
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (sortBy)
+                    {
+                        case TaskSortField.Name:
+                            tasks = tasks.OrderBy(t => t.Name);
+                            break;
+                        case TaskSortField.Status:
+                            tasks = tasks.OrderBy(t => t.Status);
+                            break;
+                        default:
+                            tasks = tasks.OrderBy(t => t.Id);
+                            break;
+                    }
+                }
+            }
+
             return tasks;
         }
     }

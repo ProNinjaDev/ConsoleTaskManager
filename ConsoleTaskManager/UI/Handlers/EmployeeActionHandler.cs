@@ -12,11 +12,13 @@ namespace ConsoleTaskManager.UI.Handlers
     {
         private readonly ITaskService _taskService;
         private readonly ConsoleView _consoleView;
+        private readonly ILoggerService _loggerService;
 
-        public EmployeeActionHandler(ITaskService taskService, ConsoleView consoleView)
+        public EmployeeActionHandler(ITaskService taskService, ConsoleView consoleView, ILoggerService loggerService)
         {
             _taskService = taskService;
             _consoleView = consoleView;
+            _loggerService = loggerService;
         }
 
         public async Task HandleActionAsync(char choice, User currentUser)
@@ -55,7 +57,12 @@ namespace ConsoleTaskManager.UI.Handlers
                             break;
                         }
 
+                        var taskToUpdate = tasks.First(t => t.Id == taskId);
+                        var oldStatus = taskToUpdate.Status;
+
                         var updatedTask = await _taskService.ChangeTaskStatusAsync(taskId, newStatus.Value);
+                        _loggerService.LogTaskStatusChange(currentUser.Login, taskId, taskToUpdate.Name, oldStatus, newStatus.Value);
+                        
                         _consoleView.DisplayMessage($"[OK] Status for task ID {updatedTask.Id} has been updated to {updatedTask.Status}");
                     }
                     catch (TaskNotFoundException ex)

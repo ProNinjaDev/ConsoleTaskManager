@@ -81,6 +81,7 @@ namespace ConsoleTaskManager.UI
             Console.WriteLine(" 2. Register a new employee");
             Console.WriteLine(" 3. View all tasks");
             Console.WriteLine(" 4. View all users");
+            Console.WriteLine(" 5. View task activity log");
             Console.WriteLine(" 0. Log out");
             Console.WriteLine();
             Console.Write("Action > ");
@@ -90,7 +91,7 @@ namespace ConsoleTaskManager.UI
                 var keyPress = Console.ReadKey(true);
                 char choice = keyPress.KeyChar;
 
-                if (choice == '1' || choice == '2' || choice == '3' || choice == '4' || choice == '0')
+                if (choice == '1' || choice == '2' || choice == '3' || choice == '4' || choice == '5' || choice == '0')
                 {
                     Console.WriteLine(choice);
                     return choice;
@@ -248,6 +249,121 @@ namespace ConsoleTaskManager.UI
                 Console.Write("Invalid choice. Please select a valid option: ");
                 Console.ResetColor();
             }
+        }
+
+        public void DisplayLogs(IEnumerable<string> logs)
+        {
+            Console.Clear();
+            DisplayHeader("Task Activity Log");
+
+            if (!logs.Any())
+            {
+                Console.WriteLine("No activity has been logged yet");
+                return;
+            }
+
+            foreach (var logEntry in logs)
+            {
+                Console.WriteLine(logEntry);
+            }
+        }
+
+        public ProjectTaskStatus? SelectStatusFilter()
+        {
+            DisplaySubHeader("Filter tasks by status");
+            Console.WriteLine(" 1. ToDo");
+            Console.WriteLine(" 2. InProgress");
+            Console.WriteLine(" 3. Done");
+            Console.WriteLine(" 4. (Show All)");
+            Console.WriteLine();
+            Console.Write("Action > ");
+
+            while (true)
+            {
+                var keyPress = Console.ReadKey(true);
+                Console.WriteLine(keyPress.KeyChar);
+
+                switch (keyPress.KeyChar)
+                {
+                    case '1':
+                        return ProjectTaskStatus.ToDo;
+                    case '2':
+                        return ProjectTaskStatus.InProgress;
+                    case '3':
+                        return ProjectTaskStatus.Done;
+                    case '4':
+                        return null;
+                }
+                
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Invalid choice. Please select a valid option: ");
+                Console.ResetColor();
+            }
+        }
+
+        public (TaskSortField, SortDirection) SelectSortOptions()
+        {
+            DisplaySubHeader("Sort tasks by");
+            Console.WriteLine(" 1. ID");
+            Console.WriteLine(" 2. Name");
+            Console.WriteLine(" 3. Status");
+
+            TaskSortField sortBy;
+            while (true)
+            {
+                Console.Write("\nAction > ");
+                var keyPress = Console.ReadKey(true);
+                Console.WriteLine(keyPress.KeyChar);
+
+                switch (keyPress.KeyChar)
+                {
+                    case '1':
+                        sortBy = TaskSortField.Id;
+                        break;
+                    case '2':
+                        sortBy = TaskSortField.Name;
+                        break;
+                    case '3':
+                        sortBy = TaskSortField.Status;
+                        break;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.Write("Invalid choice. Please select a valid option.");
+                        Console.ResetColor();
+                        continue;
+                }
+                break;
+            }
+
+            DisplaySubHeader("Sort direction");
+            Console.WriteLine(" 1. Ascending");
+            Console.WriteLine(" 2. Descending");
+            
+            SortDirection sortDirection;
+            while (true)
+            {
+                Console.Write("\nAction > ");
+                var keyPress = Console.ReadKey(true);
+                Console.WriteLine(keyPress.KeyChar);
+
+                switch (keyPress.KeyChar)
+                {
+                    case '1':
+                        sortDirection = SortDirection.Ascending;
+                        break;
+                    case '2':
+                        sortDirection = SortDirection.Descending;
+                        break;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.Write("Invalid choice. Please select a valid option.");
+                        Console.ResetColor();
+                        continue;
+                }
+                break;
+            }
+            
+            return (sortBy, sortDirection);
         }
 
         private void DisplayHeader(string title)
