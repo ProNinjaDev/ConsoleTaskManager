@@ -3,6 +3,7 @@ using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Security;
 using ConsoleTaskManager.Services.Interfaces;
 using ConsoleTaskManager.Storage.Interfaces;
+using ConsoleTaskManager.Utils;
 
 namespace ConsoleTaskManager.Services 
 {
@@ -26,16 +27,7 @@ namespace ConsoleTaskManager.Services
 
             var passwordData = PasswordHasher.GenerateHashedPassword(password);
 
-            int newId;
-            if (users.Count > 0) 
-            {
-                int maxId = users.Max(u => u.Id);
-                newId = maxId + 1;
-            }
-            else 
-            {
-                newId = 1;
-            }
+            int newId = IdGenerator.GenerateNextId(users, u => u.Id);
 
             var newUser = new User
             {

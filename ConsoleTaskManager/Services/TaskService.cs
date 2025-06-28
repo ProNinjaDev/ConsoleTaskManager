@@ -3,6 +3,7 @@ using ConsoleTaskManager.Exceptions;
 using ConsoleTaskManager.Models;
 using ConsoleTaskManager.Services.Interfaces;
 using ConsoleTaskManager.Storage.Interfaces;
+using ConsoleTaskManager.Utils;
 
 namespace ConsoleTaskManager.Services
 {
@@ -25,16 +26,7 @@ namespace ConsoleTaskManager.Services
                 throw new UserNotFoundException(employeeId);
             }
 
-            int newId;
-            if (tasks.Count > 0) 
-            {
-                int maxId = tasks.Max(t => t.Id);
-                newId = maxId + 1;
-            }
-            else 
-            {
-                newId = 1;
-            }
+            int newId = IdGenerator.GenerateNextId(tasks, t => t.Id);
 
             var newTask = new ProjectTask
             {
@@ -86,35 +78,20 @@ namespace ConsoleTaskManager.Services
 
             if (sortBy is not null)
             {
+                Func<ProjectTask, object> keySelector = sortBy switch
+                {
+                    TaskSortField.Name => t => t.Name,
+                    TaskSortField.Status => t => t.Status,
+                    _ => t => t.Id
+                };
+
                 if (sortDirection == SortDirection.Descending)
                 {
-                    switch (sortBy)
-                    {
-                        case TaskSortField.Name:
-                            tasks = tasks.OrderByDescending(t => t.Name);
-                            break;
-                        case TaskSortField.Status:
-                            tasks = tasks.OrderByDescending(t => t.Status);
-                            break;
-                        default:
-                            tasks = tasks.OrderByDescending(t => t.Id);
-                            break;
-                    }
+                    tasks = tasks.OrderByDescending(keySelector);
                 }
                 else
                 {
-                    switch (sortBy)
-                    {
-                        case TaskSortField.Name:
-                            tasks = tasks.OrderBy(t => t.Name);
-                            break;
-                        case TaskSortField.Status:
-                            tasks = tasks.OrderBy(t => t.Status);
-                            break;
-                        default:
-                            tasks = tasks.OrderBy(t => t.Id);
-                            break;
-                    }
+                    tasks = tasks.OrderBy(keySelector);
                 }
             }
 

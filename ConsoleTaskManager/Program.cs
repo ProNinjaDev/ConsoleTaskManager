@@ -30,14 +30,12 @@ async Task RunApplication()
         if (currentUser is null)
         {
             consoleView.DisplayMessage("[ERROR] Invalid login or password", true);
-            Console.WriteLine("\nPress any key to continue");
-            Console.ReadKey();
+            consoleView.WaitForAnyKey();
             continue;
         }
 
         consoleView.DisplayMessage($"Sign-in successful! Welcome {currentUser.Login} ({currentUser.Role})");
-        Console.WriteLine("\nPress any key to continue");
-        Console.ReadKey();
+        consoleView.WaitForAnyKey();
 
         await UserProcessingLoop(currentUser);
         
@@ -48,16 +46,34 @@ async Task UserProcessingLoop(User currentUser)
 {
     while (true) 
     {
-        char choice;
+        string menuTitle;
+        Dictionary<char, string> menuOptions;
 
         if (currentUser.Role == UserRole.Manager)
         {
-            choice = consoleView.DisplayManagerMenu();
+            menuTitle = "Manager's Menu";
+            menuOptions = new Dictionary<char, string>
+            {
+                { '1', "Create a new task" },
+                { '2', "Register a new employee" },
+                { '3', "View all tasks" },
+                { '4', "View all users" },
+                { '5', "View task activity log" },
+                { '0', "Log out" }
+            };
         }
         else 
         {
-            choice = consoleView.DisplayEmployeeMenu();
+            menuTitle = "Employee's Menu";
+            menuOptions = new Dictionary<char, string>
+            {
+                { '1', "View my assigned tasks" },
+                { '2', "Change a task's status" },
+                { '0', "Log out" }
+            };
         }
+
+        char choice = consoleView.DisplayMenu(menuTitle, menuOptions);
 
         if (choice == '0')
         {

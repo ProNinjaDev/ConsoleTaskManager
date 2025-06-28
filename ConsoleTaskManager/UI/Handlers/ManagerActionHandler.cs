@@ -106,8 +106,7 @@ namespace ConsoleTaskManager.UI.Handlers
                     _consoleView.DisplayLogs(logs);
                     break;
             }
-            Console.WriteLine("\nPress any key to return to the menu");
-            Console.ReadKey();
+            _consoleView.WaitForAnyKey("\nPress any key to return to the menu");
         }
     }
 } 

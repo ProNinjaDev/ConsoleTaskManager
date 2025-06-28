@@ -1,6 +1,7 @@
 using ConsoleTaskManager.Models;
 using ConsoleTaskManager.DTOs;
 using System.Text;
+using System.Collections;
 
 
 namespace ConsoleTaskManager.UI 
@@ -73,16 +74,15 @@ namespace ConsoleTaskManager.UI
             return (login, password);
         }
 
-        public char DisplayManagerMenu()
+        public char DisplayMenu(string title, Dictionary<char, string> options)
         {
             Console.Clear();
-            DisplayHeader("Manager's Menu");
-            Console.WriteLine(" 1. Create a new task");
-            Console.WriteLine(" 2. Register a new employee");
-            Console.WriteLine(" 3. View all tasks");
-            Console.WriteLine(" 4. View all users");
-            Console.WriteLine(" 5. View task activity log");
-            Console.WriteLine(" 0. Log out");
+            DisplayHeader(title);
+
+            foreach (var option in options)
+            {
+                Console.WriteLine($" {option.Key}. {option.Value}");
+            }
             Console.WriteLine();
             Console.Write("Action > ");
 
@@ -91,7 +91,7 @@ namespace ConsoleTaskManager.UI
                 var keyPress = Console.ReadKey(true);
                 char choice = keyPress.KeyChar;
 
-                if (choice == '1' || choice == '2' || choice == '3' || choice == '4' || choice == '5' || choice == '0')
+                if (options.ContainsKey(choice))
                 {
                     Console.WriteLine(choice);
                     return choice;
@@ -99,37 +99,24 @@ namespace ConsoleTaskManager.UI
             }
         }
 
-        public char DisplayEmployeeMenu()
+        private bool BeginTableDisplay(string title, IEnumerable items, string emptyMessage)
         {
             Console.Clear();
-            DisplayHeader("Employee's Menu");
-            Console.WriteLine(" 1. View my assigned tasks");
-            Console.WriteLine(" 2. Change a task's status");
-            Console.WriteLine(" 0. Log out");
-            Console.WriteLine();
-            Console.Write("Action > ");
+            DisplayHeader(title);
 
-            while (true)
+            if (!items.Cast<object>().Any())
             {
-                var keyPress = Console.ReadKey(true);
-                char choice = keyPress.KeyChar;
-
-                if (choice == '1' || choice == '2' || choice == '0')
-                {
-                    Console.WriteLine(choice);
-                    return choice;
-                }
+                Console.WriteLine(emptyMessage);
+                return false;
             }
+
+            return true;
         }
 
         public void DisplayUsers(IEnumerable<User> users)
         {
-            Console.Clear();
-            DisplayHeader("All Registered Users");
-
-            if (!users.Any())
+            if (!BeginTableDisplay("All Registered Users", users, "No users found in the system"))
             {
-                Console.WriteLine("No users found in the system");
                 return;
             }
 
@@ -144,12 +131,8 @@ namespace ConsoleTaskManager.UI
 
         public void DisplayTasks(IEnumerable<ProjectTask> tasks, string title)
         {
-            Console.Clear();
-            DisplayHeader(title);
-
-            if (!tasks.Any())
+            if (!BeginTableDisplay(title, tasks, "No tasks found"))
             {
-                Console.WriteLine("No tasks found");
                 return;
             }
 
@@ -211,44 +194,22 @@ namespace ConsoleTaskManager.UI
                     {
                         return employeeId;
                     }
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write("Invalid ID. Please select a valid employee ID: ");
-                    Console.ResetColor();
+                    DisplayInvalidChoiceMessage("Invalid ID. Please select a valid employee ID: ");
                 }
             }
         }
 
         public ProjectTaskStatus? SelectTaskStatus()
         {
-            DisplaySubHeader("Select New Status");
-            Console.WriteLine(" 1. ToDo");
-            Console.WriteLine(" 2. InProgress");
-            Console.WriteLine(" 3. Done");
-            Console.WriteLine(" 0. (Cancel)");
-            Console.WriteLine();
-            Console.Write("Action > ");
-
-            while (true)
+            var options = new Dictionary<char, (string Text, ProjectTaskStatus? Value)>
             {
-                var keyPress = Console.ReadKey(true);
-                Console.WriteLine(keyPress.KeyChar);
+                { '1', ("ToDo", ProjectTaskStatus.ToDo) },
+                { '2', ("InProgress", ProjectTaskStatus.InProgress) },
+                { '3', ("Done", ProjectTaskStatus.Done) },
+                { '0', ("(Cancel)", null) }
+            };
 
-                switch (keyPress.KeyChar)
-                {
-                    case '1':
-                        return ProjectTaskStatus.ToDo;
-                    case '2':
-                        return ProjectTaskStatus.InProgress;
-                    case '3':
-                        return ProjectTaskStatus.Done;
-                    case '0':
-                        return null;
-                }
-                
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("Invalid choice. Please select a valid option: ");
-                Console.ResetColor();
-            }
+            return SelectOption<ProjectTaskStatus>("Select New Status", options);
         }
 
         public void DisplayLogs(IEnumerable<string> logs)
@@ -270,35 +231,15 @@ namespace ConsoleTaskManager.UI
 
         public ProjectTaskStatus? SelectStatusFilter()
         {
-            DisplaySubHeader("Filter tasks by status");
-            Console.WriteLine(" 1. ToDo");
-            Console.WriteLine(" 2. InProgress");
-            Console.WriteLine(" 3. Done");
-            Console.WriteLine(" 4. (Show All)");
-            Console.WriteLine();
-            Console.Write("Action > ");
-
-            while (true)
+            var options = new Dictionary<char, (string Text, ProjectTaskStatus? Value)>
             {
-                var keyPress = Console.ReadKey(true);
-                Console.WriteLine(keyPress.KeyChar);
+                { '1', ("ToDo", ProjectTaskStatus.ToDo) },
+                { '2', ("InProgress", ProjectTaskStatus.InProgress) },
+                { '3', ("Done", ProjectTaskStatus.Done) },
+                { '4', ("(Show All)", null) }
+            };
 
-                switch (keyPress.KeyChar)
-                {
-                    case '1':
-                        return ProjectTaskStatus.ToDo;
-                    case '2':
-                        return ProjectTaskStatus.InProgress;
-                    case '3':
-                        return ProjectTaskStatus.Done;
-                    case '4':
-                        return null;
-                }
-                
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("Invalid choice. Please select a valid option: ");
-                Console.ResetColor();
-            }
+            return SelectOption<ProjectTaskStatus>("Filter tasks by status", options);
         }
 
         public (TaskSortField, SortDirection) SelectSortOptions()
@@ -327,9 +268,7 @@ namespace ConsoleTaskManager.UI
                         sortBy = TaskSortField.Status;
                         break;
                     default:
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write("Invalid choice. Please select a valid option.");
-                        Console.ResetColor();
+                        DisplayInvalidChoiceMessage();
                         continue;
                 }
                 break;
@@ -355,9 +294,7 @@ namespace ConsoleTaskManager.UI
                         sortDirection = SortDirection.Descending;
                         break;
                     default:
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write("Invalid choice. Please select a valid option.");
-                        Console.ResetColor();
+                        DisplayInvalidChoiceMessage();
                         continue;
                 }
                 break;
@@ -381,6 +318,43 @@ namespace ConsoleTaskManager.UI
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine($"\n-- {title} --");
             Console.ResetColor();
+        }
+
+        private void DisplayInvalidChoiceMessage(string message = "Invalid choice. Please select a valid option: ")
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(message);
+            Console.ResetColor();
+        }
+
+        private T? SelectOption<T>(string subHeader, Dictionary<char, (string Text, T? Value)> options) where T : struct
+        {
+            DisplaySubHeader(subHeader);
+            foreach (var option in options)
+            {
+                Console.WriteLine($" {option.Key}. {option.Value.Text}");
+            }
+            Console.WriteLine();
+            Console.Write("Action > ");
+
+            while (true)
+            {
+                var keyPress = Console.ReadKey(true);
+                Console.WriteLine(keyPress.KeyChar);
+
+                if (options.TryGetValue(keyPress.KeyChar, out var selectedOption))
+                {
+                    return selectedOption.Value;
+                }
+                
+                DisplayInvalidChoiceMessage();
+            }
+        }
+
+        public void WaitForAnyKey(string message = "\nPress any key to continue...")
+        {
+            Console.WriteLine(message);
+            Console.ReadKey();
         }
     }
 }
